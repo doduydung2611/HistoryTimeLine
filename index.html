@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Kháng Chiến Chống Mỹ Việt Nam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline-title {
+            text-align: center;
+            color: #d32f2f;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffeb3b, #ff9800, #f44336, #2196f3, #4caf50);
+            transform: translateY(-50%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .timeline-events {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            padding: 0 20px;
+        }
+
+        .event {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .event:hover {
+            transform: scale(1.05);
+        }
+
+        .event:nth-child(odd) {
+            flex-direction: column-reverse;
+            margin-top: -120px;
+        }
+
+        .event:nth-child(even) {
+            margin-top: 120px;
+        }
+
+        .event-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 3;
+            position: relative;
+        }
+
+        .event-line {
+            width: 3px;
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+        }
+
+        .event-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            max-width: 200px;
+            text-align: center;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+        .event-year {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .event-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .event-description {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Color scheme for different events */
+        .event:nth-child(1) .event-dot { background: #ffeb3b; }
+        .event:nth-child(1) .event-card { border-left-color: #ffeb3b; }
+        .event:nth-child(1) .event-title { color: #f57f17; }
+
+        .event:nth-child(2) .event-dot { background: #ff9800; }
+        .event:nth-child(2) .event-card { border-left-color: #ff9800; }
+        .event:nth-child(2) .event-title { color: #e65100; }
+
+        .event:nth-child(3) .event-dot { background: #f44336; }
+        .event:nth-child(3) .event-card { border-left-color: #f44336; }
+        .event:nth-child(3) .event-title { color: #c62828; }
+
+        .event:nth-child(4) .event-dot { background: #2196f3; }
+        .event:nth-child(4) .event-card { border-left-color: #2196f3; }
+        .event:nth-child(4) .event-title { color: #1565c0; }
+
+        .event:nth-child(5) .event-dot { background: #4caf50; }
+        .event:nth-child(5) .event-card { border-left-color: #4caf50; }
+        .event:nth-child(5) .event-title { color: #2e7d32; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .timeline-events {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .timeline-line {
+                width: 4px;
+                height: 100%;
+                left: 50%;
+                top: 0;
+                transform: translateX(-50%);
+                background: linear-gradient(to bottom, #ffeb3b, #ff9800, #f44336, #2196f3, #4caf50);
+            }
+
+            .event {
+                flex-direction: row !important;
+                margin-top: 0 !important;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .event:nth-child(odd) {
+                flex-direction: row-reverse !important;
+            }
+
+            .event-line {
+                width: 60px;
+                height: 3px;
+            }
+
+            .event-card {
+                max-width: 250px;
+            }
+
+            .timeline-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #ffeb3b, #ffc107);
+            color: #333;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .modal-subtitle {
+            font-size: 1.1rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: #333;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .content-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #ffeb3b;
+            display: inline-block;
+        }
+
+        .historical-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .historical-text p {
+            margin-bottom: 15px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .timeline-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffeb3b;
+        }
+
+        .timeline-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .timeline-list li:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-list li strong {
+            color: #d32f2f;
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .event:nth-child(1) { animation-delay: 0.1s; }
+        .event:nth-child(2) { animation-delay: 0.2s; }
+        .event:nth-child(3) { animation-delay: 0.3s; }
+        .event:nth-child(4) { animation-delay: 0.4s; }
+        .event:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="timeline-container">
+        <h1 class="timeline-title">KHÁNG CHIẾN CHỐNG MỸ</h1>
+        
+        <div class="timeline">
+            <div class="timeline-line"></div>
+            
+            <div class="timeline-events">
+                <div class="event" onclick="openModal('modal1964')">
+                    <div class="event-card">
+                        <div class="event-year">1964</div>
+                        <div class="event-title">Sự Kiện Vịnh Bắc Bộ</div>
+                        <div class="event-description">Mỹ bắt đầu can thiệp trực tiếp vào Việt Nam, bom đạn đầu tiên rơi xuống đất nước</div>
+                    </div>
+                    <div class="event-line"></div>
+                    <div class="event-dot"></div>
+                </div>
+
+                <div class="event">
+                    <div class="event-dot"></div>
+                    <div class="event-line"></div>
+                    <div class="event-card">
+                        <div class="event-year">1968</div>
+                        <div class="event-title">Tổng Tiến Công Tết Mậu Thân</div>
+                        <div class="event-description">Cuộc tổng tiến công lịch sử, chứng minh sức mạnh và ý chí bất khuất của dân tộc</div>
+                    </div>
+                </div>
+
+                <div class="event">
+                    <div class="event-card">
+                        <div class="event-year">1972</div>
+                        <div class="event-title">Chiến Dịch Điện Biên Phủ Trên Không</div>
+                        <div class="event-description">Bắn rơi máy bay B-52, thắng lợi vang dội làm chấn động thế giới</div>
+                    </div>
+                    <div class="event-line"></div>
+                    <div class="event-dot"></div>
+                </div>
+
+                <div class="event">
+                    <div class="event-dot"></div>
+                    <div class="event-line"></div>
+                    <div class="event-card">
+                        <div class="event-year">1973</div>
+                        <div class="event-title">Hiệp Định Paris</div>
+                        <div class="event-description">Mỹ ký kết hiệp định, cam kết rút quân khỏi Việt Nam, thừa nhận thất bại</div>
+                    </div>
+                </div>
+
+                <div class="event">
+                    <div class="event-card">
+                        <div class="event-year">1975</div>
+                        <div class="event-title">Giải Phóng Hoàn Toàn</div>
+                        <div class="event-description">30/4/1975 - Giải phóng Sài Gòn, thống nhất đất nước, kết thúc cuộc kháng chiến</div>
+                    </div>
+                    <div class="event-line"></div>
+                    <div class="event-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal cho sự kiện 1964 -->
+        <div id="modal1964" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Sự Kiện Vịnh Bắc Bộ - 1964</h2>
+                    <p class="modal-subtitle">Điểm khởi đầu cuộc can thiệp trực tiếp của Mỹ vào Việt Nam</p>
+                    <span class="close" onclick="closeModal('modal1964')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="content-section">
+                        <h3 class="section-title">📖 Tài Liệu Lịch Sử</h3>
+                        <div class="historical-text">
+                            <p><strong>Bối cảnh lịch sử:</strong> Sau Hiệp định Geneva 1954, Việt Nam được tạm chia làm hai miền theo vĩ tuyến 17. Mỹ bắt đầu hỗ trợ chính quyền Ngô Đình Diệm ở miền Nam, trong khi miền Bắc do Đảng Lao động Việt Nam lãnh đạo.</p>
+                            
+                            <p><strong>Diễn biến sự kiện:</strong> Ngày 2/8/1964, tàu khu trục Maddox của Mỹ bị cáo buộc bị tấn công tại Vịnh Bắc Bộ. Ngày 4/8, Mỹ tuyên bố có cuộc tấn công thứ hai (sau này được chứng minh là không có thật). Tổng thống Johnson sử dụng sự kiện này để thuyết phục Quốc hội Mỹ thông qua Nghị quyết Vịnh Bắc Bộ.</p>
+                            
+                            <p><strong>Hậu quả:</strong> Nghị quyết này trao cho Tổng thống Mỹ quyền hành sử dụng vũ lực quân sự ở Đông Nam Á mà không cần tuyên chiến chính thức. Đây là cơ sở pháp lý cho sự leo thang quân sự của Mỹ tại Việt Nam.</p>
+                            
+                            <p><strong>Ý nghĩa lịch sử:</strong> Sự kiện Vịnh Bắc Bộ đánh dấu bước ngoặt quan trọng, mở đầu cho cuộc chiến tranh Việt Nam với sự tham gia trực tiếp và quy mô lớn của quân đội Mỹ, kéo dài hơn một thập kỷ và để lại hậu quả sâu sắc cho cả hai dân tộc.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3 class="section-title">🎬 Video Tài Liệu</h3>
+                        <div class="video-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/HODxnUrFX6k" 
+                                title="Sự Kiện Vịnh Bắc Bộ - Tài Liệu Lịch Sử"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <p style="font-style: italic; color: #666; text-align: center; margin-top: 10px;">
+                            Video tài liệu về sự kiện Vịnh Bắc Bộ và bối cảnh lịch sử
+                        </p>
+                    </div>
+
+                    <div class="content-section">
+                        <h3 class="section-title">📅 Dòng Thời Gian Chi Tiết</h3>
+                        <div class="timeline-list">
+                            <ul>
+                                <li><strong>2/8/1964:</strong> Tàu khu trục USS Maddox bị cáo buộc bị tấn công tại Vịnh Bắc Bộ</li>
+                                <li><strong>4/8/1964:</strong> Mỹ tuyên bố có cuộc tấn công thứ hai (sau này được chứng minh là giả)</li>
+                                <li><strong>5/8/1964:</strong> Mỹ tiến hành không kích đáp trá đầu tiên vào miền Bắc Việt Nam</li>
+                                <li><strong>7/8/1964:</strong> Quốc hội Mỹ thông qua Nghị quyết Vịnh Bắc Bộ với tỷ lệ áp đảo</li>
+                                <li><strong>1965:</strong> Lực lượng hải quân lục chiến Mỹ đầu tiên đổ bộ lên Đà Nẵng</li>
+                                <li><strong>1965-1975:</strong> Cuộc chiến tranh Việt Nam leo thang với sự tham gia của hàng trăm nghìn quân Mỹ</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target === modals[i]) {
+                    modals[i].style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.getElementsByClassName('modal');
+                for (let i = 0; i < modals.length; i++) {
+                    if (modals[i].style.display === 'block') {
+                        modals[i].style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                }
+            }
+        });
+
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const events = document.querySelectorAll('.event');
+            
+            events.forEach(event => {
+                event.addEventListener('mouseenter', function() {
+                    const card = this.querySelector('.event-card');
+                    card.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+
+                event.addEventListener('mouseleave', function() {
+                    const card = this.querySelector('.event-card');
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            events.forEach(event => {
+                observer.observe(event);
+            });
+        });
+    </script>
+</body>
+</html>
